@@ -1,0 +1,91 @@
+# --------------------
+# General Settings
+# --------------------
+seed: 42
+device: cuda
+log_dir: logs/
+output_dir: outputs/
+save_every: 1
+eval_every: 1
+max_checkpoints: 3
+
+# --------------------
+# Dataset
+# --------------------
+dataset: amazon-book          # options: amazon-book | yelp | ml-1m
+data_path: data/amazon        # directory containing preprocessed dataset
+metadata_fields: ["title", "category", "description", "brand"]
+max_history_len: 50
+max_metadata_len: 128
+max_identifier_len: 10
+
+# --------------------
+# Tokenizer
+# --------------------
+tokenizer_name: t5-base
+special_tokens:
+  identifier_start: "<id_start>"
+  identifier_end: "<id_end>"
+
+# --------------------
+# Model
+# --------------------
+model_name: t5-base
+hidden_size: 768
+num_layers: 12
+num_heads: 12
+dropout: 0.1
+
+# --------------------
+# Diffusion
+# --------------------
+diffusion_steps: 200
+noise_schedule: cosine
+guidance_weight: 1.5
+
+# --------------------
+# Training (Identifier)
+# --------------------
+identifier_lr: 5e-5
+identifier_epochs: 20
+identifier_batch_size: 32
+lambda_mask: 1.0
+lambda_set: 1.0
+prompt_mask_ratio: 0.3
+token_mask_ratio: 0.15
+
+# --------------------
+# Training (Recommender)
+# --------------------
+recommender_lr: 5e-5
+recommender_epochs: 10
+recommender_batch_size: 32
+lambda_diffusion: 1.0
+lambda_set_match: 1.0
+lambda_slot: 1.0
+lambda_pred_align: 1.0
+lambda_position: 1.0
+lambda_mask_loss: 1.0
+lambda_cls_loss: 1.0
+lambda_margin: 1.0
+
+# --------------------
+# Identifier Refinement
+# --------------------
+refinement_rounds:
+  amazon-book: 3
+  yelp: 2
+  ml-1m: 4
+refinement_topk: 5
+
+# --------------------
+# Evaluation
+# --------------------
+metrics: ["recall@10", "recall@20", "ndcg@10", "ndcg@20"]
+num_eval_samples: 1000
+
+# --------------------
+# Inference
+# --------------------
+num_generate_samples: 20
+ranking_method: logprob_sum   # options: logprob_sum | frequency
