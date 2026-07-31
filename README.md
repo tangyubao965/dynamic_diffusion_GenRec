@@ -204,3 +204,45 @@ For stable results, run each experiment multiple times with different random see
 ## License
 
 This repository is released for research purposes.
+
+## Paper-to-Code Mapping
+
+The three core components highlighted in the paper are implemented as follows:
+
+- **Set-aware loss, Eq. (5):**
+  `utils/losses.py::set_aware_loss`. It is combined with the diffusion recovery
+  loss in `models/diffusion.py::DiffusionTrainer.compute_losses` for both
+  grounding and recommendation training.
+- **Dynamic sem-id evolution, Section 3.6:**
+  `train/evolution.py::SemIDEvolutionEngine`. The `run` method alternates
+  item-conditioned sem-id regeneration and user-conditioned recommender
+  fine-tuning with one shared denoising model. Duplicate sem-ids are resolved by
+  `train/evolution.py::resolve_duplicate_sem_ids`.
+- **Order-robust score, Section 3.7:**
+  `inference/order_robust.py::order_robust_score`, which computes
+  `sum_x max_k log P(x | u, k)` for each candidate item.
+
+### Evolution data interface
+
+`SemIDEvolutionEngine` is independent of dataset-specific preprocessing. The
+item-side loader should return batches with:
+
+```python
+{
+    "item_id": ...,                  # [B]
+    "item_condition_ids": ...,       # [B, L_item]
+    "item_attention_mask": ...,      # optional [B, L_item]
+}
+```
+
+The recommendation loader should return:
+
+```python
+{
+    "history_ids": ...,              # [B, L_history]
+    "history_attention_mask": ...,   # optional [B, L_history]
+    "target_item_id": ...,           # [B], mapped to the current sem-id space
+}
+```
+
+The exact key names can be changed through `train.evolution.EvolutionConfig`.

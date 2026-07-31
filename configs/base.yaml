@@ -31,16 +31,17 @@ special_tokens:
 # Model
 # --------------------
 model_name: t5-base
-hidden_size: 768
-num_layers: 12
-num_heads: 12
+hidden_size: 512
+num_layers: 6
+num_heads: 8
+ffn_dim: 2048
 dropout: 0.1
 
 # --------------------
 # Diffusion
 # --------------------
-diffusion_steps: 200
-noise_schedule: cosine
+diffusion_steps: 100
+noise_schedule: linear
 guidance_weight: 1.5
 
 # --------------------
@@ -74,7 +75,7 @@ lambda_margin: 1.0
 # --------------------
 refinement_rounds:
   amazon-book: 3
-  yelp: 2
+  yelp: 3
   ml-1m: 4
 refinement_topk: 5
 
@@ -88,4 +89,7 @@ num_eval_samples: 1000
 # Inference
 # --------------------
 num_generate_samples: 20
-ranking_method: logprob_sum   # options: logprob_sum | frequency
+ranking_method: order_robust
+inference_steps: 10
+top_b_tokens: 20
+top_m_candidates: 1000
